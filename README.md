@@ -40,7 +40,7 @@
 
 ![Planning](https://user-images.githubusercontent.com/66685912/136589839-6c767a0f-4327-402c-9b12-36791cd9c80f.png)
  
-[![Watch the video](https://img.youtube.com/vi/3K0wXkf0QAY/maxresdefault.jpg)](https://www.youtube.com/watch?v=3K0wXkf0QAY)
+[![Watch the video](https://img.youtube.com/vi/3K0wXkf0QAY/hqdefault.jpg)](https://www.youtube.com/watch?v=3K0wXkf0QAY)
 
   ## [instructables](https://www.instructables.com/Interactive-LED-Periodic-Table/)
   
