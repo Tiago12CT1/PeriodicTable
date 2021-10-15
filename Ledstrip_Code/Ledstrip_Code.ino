@@ -24,16 +24,19 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 void setup() {
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   Serial.begin(9600);
-  mySerial.begin(9600);
+  // mySerial.begin(9600);
 }
 
 void loop() {
-  if (int s = mySerial.available()) {
-    mySerial.readBytes(inputBuffer, sizeof(inputBuffer));
+  //  // Set all pixel colors to 'off'
+  if (int s = Serial.available()) {
+
+    Serial.readBytes(inputBuffer, sizeof(inputBuffer));
     int pixel = atoi(inputBuffer);
-    memset(inputBuffer, 0, sizeof(inputBuffer));
-    pixels.clear(); // Set all pixel colors to 'off'
-    pixels.setPixelColor(pixel, pixels.Color(0, 150, 0));
+    // memset(inputBuffer, 0, sizeof(inputBuffer));
+    //
+    pixels.clear();
+    pixels.setPixelColor(pixel, pixels.Color(255, 0, 0));
     pixels.show();   // Send the updated pixel colors to the hardware.
     Serial.println(pixel);
   }
