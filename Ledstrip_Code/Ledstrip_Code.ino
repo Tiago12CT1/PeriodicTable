@@ -9,9 +9,13 @@ SoftwareSerial mySerial(9, 8); // RX, TX
 
 // Which pin on the Arduino is connected to the NeoPixels?
 #define PIN        3 // On Trinket or Gemma, suggest changing this to 1
-char inputBuffer[16];
+char inputBuffer[118];
 // How many NeoPixels are attached to the Arduino?
+<<<<<<< Updated upstream
 #define NUMPIXELS 500 // Popular NeoPixel ring size
+=======
+#define NUMPIXELS 118 // Popular NeoPixel ring size
+>>>>>>> Stashed changes
 
 // When setting up the NeoPixel library, we tell it how many pixels,
 // and which pin to use to send signals. Note that for older NeoPixel
