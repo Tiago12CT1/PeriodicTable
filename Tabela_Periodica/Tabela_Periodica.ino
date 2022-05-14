@@ -39,11 +39,13 @@ const byte metals[11] PROGMEM = {13, 31, 49, 50, 81, 82, 83, 113, 114, 115, 116}
 const byte semimetals[7] PROGMEM = {5, 14, 32, 33, 51, 52, 84};
 const byte nonmetals[7] PROGMEM = {1, 6, 7, 8, 15, 16, 34};
 const byte radioactive[23] PROGMEM = {43, 83, 84, 85, 86, 87, 88, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118};
-
-
+const byte lanthanides[15] PROMGEM = {88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102]; 
+const byte actinides[15] PROMGEM = {103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117};
+                                      
 //Stores RGB colours. It is easier to play with colours when they are all together like this rather than looking for them through the code.
 //                                 R    G    B
-const byte groupColours[19][3] = {{220, 0,   220},  //Hydrogen          (0)
+const byte groupColours[19][3] = 
+  {{220, 0,   220},  //Hydrogen          (0)
   {63,  0,   255},  //Alkali            (1)
   {21,  150, 0},    //Alkali Earth      (2)
   {255, 255, 255},  //Lanthanides       (3)
@@ -61,8 +63,7 @@ const byte groupColours[19][3] = {{220, 0,   220},  //Hydrogen          (0)
   {0,   255, 135},  //chalcogens        (15)
   {0,   255, 0},    //solids            (16)
   {0,   0,   255},  //liquids           (17)
-  {255, 255, 0}
-};   //gasses            (18)
+  {255, 255, 0}};   //gasses            (18)
 
 //Converts proton number to led index; protons[i] where i is proton number gives correct led position; eg the led for helium = proton[2] = led 35;
 //proton number            1  2   3  4  5   6   7   8   9   10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57   58   59   60  61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87 88 89   90   91   92   93   94   95   96   97   98   99   100   101   102   103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118
@@ -98,7 +99,7 @@ void setup() {
   Serial.begin(9600); //set up serial line with bluetooth module
   set_max_power_in_volts_and_milliamps(5, 4000); //sets the max power of the display
 
-  //allElements(); //initialize display with all groups
+  allElements(); //initialize display with all groups
 }
 
 void loop() {
@@ -130,11 +131,11 @@ void checkCommands(char inStr[]) {
   }
   if (!strcmp(inStr, "lanthanides")) {
     FastLED.clear();  //lights up lanthanides
-    selectElement(71);
+    selectLanthanides();
   }
   if (!strcmp(inStr, "actinides")) {
     FastLED.clear();  //lights up actinides
-    selectElement(103);
+    selectActinides();
   }
   if (!strcmp(inStr, "transition")) {
     FastLED.clear();
@@ -220,14 +221,16 @@ void allElements() {
   FastLED.clear();
   selectAlkali();
   selectColumn(1, 2);
-  selectElement(71);
-  selectElement(103);
+  selectLanthanides();
+  selectActinides();
   selectTransition();
   selectMetals();
   selectSemimetals();
   selectNonmetals();
   selectColumn(16, 9);
   selectColumn(17, 10);
+  selectLanthanides();
+  selectActinides();
 }
 
 //lights up alkali group
@@ -248,6 +251,24 @@ void selectTransition() {
     delay(15);
   }
 }
+
+void selectLanthanides() {
+  Serial.println("Lanthanides");
+  for (byte i = 0; i < 15; i++) {
+    setColourRgb(pgm_read_word_near(Lanthinides + i), groupColours[3][0], groupColours[3][1], groupColours[3][2]); //Sets each element to its correct colour based on its group
+    FastLED.show();
+    delay(15);
+  }
+}
+                                      
+void selectActinides() {
+  Serial.println("Actinides");
+  for (byte i = 0; i < 15; i++) {
+    setColourRgb(pgm_read_word_near(Actinides + i), groupColours[4][0], groupColours[4][1], groupColours[4][2]); //Sets each element to its correct colour based on its group
+    FastLED.show();
+    delay(15);
+  }
+}                                      
 
 //lights up metals group
 void selectMetals() {
