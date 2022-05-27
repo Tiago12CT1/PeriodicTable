@@ -5,16 +5,13 @@
    Description: Controlls the WS2812B LED chain in the perodic table display. Accepts commands via Bluetooth from an android phone app.
    Note: Reddit user u/LincageMap and I were working on very similar projects at the same time so shared some ideas!
          I borrowed some of his ideas and code for the temperature, density, discovory and electronegativity features.
-
 */
 
 /*
    Things to do:
    -
    -commenting
-
    -
-
    Possible optimisations
    -Change allgroups function to use allmetals and allnonmetals functions
    -Get rid of hydrogen in groupColours (saves 3 bytes)
@@ -23,7 +20,7 @@
 #include <avr/pgmspace.h>
 #include "FastLED.h" //Importing the fastLED library https://github.com/FastLED/FastLED/releases
 
-#define NUM_LEDS 90 //Defining that there are 90 LEDs in the display
+#define NUM_LEDS 118 //Defining that there are 90 LEDs in the display
 #define DATA_PIN 5 //The data wire from the LED chain connects to D9 on the Arduino
 
 CRGB leds[NUM_LEDS]; //Array for the LED colours
@@ -39,8 +36,8 @@ const byte metals[11] PROGMEM = {13, 31, 49, 50, 81, 82, 83, 113, 114, 115, 116}
 const byte semimetals[7] PROGMEM = {5, 14, 32, 33, 51, 52, 84};
 const byte nonmetals[7] PROGMEM = {1, 6, 7, 8, 15, 16, 34};
 const byte radioactive[23] PROGMEM = {43, 83, 84, 85, 86, 87, 88, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118};
-const byte lanthanides[15] PROMGEM = {88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102]; 
-const byte actinides[15] PROMGEM = {103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117};
+const byte lanthanides[15] PROGMEM = {57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71}; 
+const byte actinides[15] PROGMEM = {89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103};
                                       
 //Stores RGB colours. It is easier to play with colours when they are all together like this rather than looking for them through the code.
 //                                 R    G    B
@@ -67,7 +64,7 @@ const byte groupColours[19][3] =
 
 //Converts proton number to led index; protons[i] where i is proton number gives correct led position; eg the led for helium = proton[2] = led 35;
 //proton number            1  2   3  4  5   6   7   8   9   10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57   58   59   60  61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87 88 89   90   91   92   93   94   95   96   97   98   99   100   101   102   103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118
-const byte protons[] = {0, 2, 81, 3, 1, 56, 57, 68, 69, 80, 82, 4,  0,  55, 58, 67, 70, 79, 83, 5,  12, 13, 15, 21, 23, 30, 31, 38, 39, 46, 47, 54, 59, 66, 71, 78, 84, 6,  11, 14, 16, 21, 24, 29, 32, 37, 40, 43, 48, 53, 60, 65, 72, 77, 85, 7,  10, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 21, 20, 25, 28, 33, 36, 41, 44, 49, 52, 61, 64, 73, 76, 86, 8, 9, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114,  115,  116,  117, 18, 19, 26, 27, 34, 35, 42, 43, 50, 51, 62, 63, 74, 75, 87};
+const byte protons[] = {0, 2, 81, 3, 1, 56, 57, 68, 69, 80, 82, 4,  0,  55, 58, 67, 70, 79, 83, 5,  12, 13, 15, 22, 23, 30, 31, 38, 39, 46, 47, 54, 59, 66, 71, 78, 84, 6,  11, 14, 16, 21, 24, 29, 32, 37, 40, 45, 48, 53, 60, 65, 72, 77, 85, 7,  10, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 17, 20, 25, 28, 33, 36, 41, 44, 49, 52, 61, 64, 73, 76, 86, 8, 9, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114,  115,  116,  117, 18, 19, 26, 27, 34, 35, 42, 43, 50, 51, 62, 63, 74, 75, 87};
 
 //Stores locations of the elements on the table.
 const byte matrix[7][18] = {{  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2},
@@ -219,6 +216,7 @@ void setColourRgb(byte protonNumber, unsigned int red, unsigned int green, unsig
 //Light up every cell - Colour coded to display element groups
 void allElements() {
   FastLED.clear();
+  selectElement(4);
   selectAlkali();
   selectColumn(1, 2);
   selectLanthanides();
@@ -229,8 +227,7 @@ void allElements() {
   selectNonmetals();
   selectColumn(16, 9);
   selectColumn(17, 10);
-  selectLanthanides();
-  selectActinides();
+
 }
 
 //lights up alkali group
@@ -255,7 +252,7 @@ void selectTransition() {
 void selectLanthanides() {
   Serial.println("Lanthanides");
   for (byte i = 0; i < 15; i++) {
-    setColourRgb(pgm_read_word_near(Lanthinides + i), groupColours[3][0], groupColours[3][1], groupColours[3][2]); //Sets each element to its correct colour based on its group
+    setColourRgb(pgm_read_word_near(lanthanides + i), groupColours[3][0], groupColours[3][1], groupColours[3][2]); //Sets each element to its correct colour based on its group
     FastLED.show();
     delay(15);
   }
@@ -264,7 +261,7 @@ void selectLanthanides() {
 void selectActinides() {
   Serial.println("Actinides");
   for (byte i = 0; i < 15; i++) {
-    setColourRgb(pgm_read_word_near(Actinides + i), groupColours[4][0], groupColours[4][1], groupColours[4][2]); //Sets each element to its correct colour based on its group
+    setColourRgb(pgm_read_word_near(actinides + i), groupColours[4][0], groupColours[4][1], groupColours[4][2]); //Sets each element to its correct colour based on its group
     FastLED.show();
     delay(15);
   }
